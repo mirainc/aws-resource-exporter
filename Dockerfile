@@ -1,6 +1,11 @@
-FROM registry.centos.org/centos/centos:7
+FROM golang:1.18
 
-COPY aws-resource-exporter /bin/aws-resource-exporter
+WORKDIR /usr/src/app
 
-EXPOSE      9115
-ENTRYPOINT  [ "/bin/aws-resource-exporter" ]
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
+
+COPY . .
+RUN go build -v -o /usr/local/bin/aws_resource_exporter ./...
+
+CMD ["aws_resource_exporter"]
