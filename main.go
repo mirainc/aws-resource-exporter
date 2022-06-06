@@ -7,7 +7,6 @@ import (
 	"syscall"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/go-kit/kit/log/level"
 	"github.com/prometheus/common/promlog"
@@ -51,13 +50,7 @@ func run() int {
 		return 1
 	}
 
-	creds := credentials.NewEnvCredentials()
-	if _, err := creds.Get(); err != nil {
-		level.Error(logger).Log("msg", "Could not get AWS credentials from env variables", "err", err)
-		return 1
-	}
-
-	config := aws.NewConfig().WithCredentials(creds).WithRegion(awsRegion)
+	config := aws.NewConfig().WithRegion(awsRegion)
 	sess := session.Must(session.NewSession(config))
 
 	exporterMetrics = NewExporterMetrics(sess)
